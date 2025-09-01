@@ -67,7 +67,7 @@ This project includes automated CI/CD workflows that run on GitHub Actions:
 - ✅ **Unit Tests** - React Native components
 - ✅ **E2E Tests** - Detox framework  
 - ✅ **Screenshot Capture** - Visual UI testing
-- ✅ **Cross-version Testing** - Node.js 18.x and 20.x
+- ✅ **Single Version Testing** - Node.js 20.x
 
 ### **Workflows:**
 - **CI/CD Pipeline** - Runs on every push/PR

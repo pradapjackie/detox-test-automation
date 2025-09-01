@@ -98,9 +98,6 @@ jspm_packages/
 # Optional npm cache directory
 .npm
 
-# Keep package-lock.json for consistent installs
-!package-lock.json
-
 # Optional eslint cache
 .eslintcache
 

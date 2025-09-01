@@ -7,8 +7,8 @@ This project includes comprehensive GitHub Actions workflows for automated testi
 ### 1. **CI/CD Pipeline** (`.github/workflows/ci.yml`)
 - **Triggers:** Push to main/master/develop, Pull Requests
 - **Runs:** Unit tests, Detox E2E tests, Screenshot capture
-- **Matrix:** Tests on Node.js 18.x and 20.x
-- **Artifacts:** Screenshots uploaded for each Node version
+- **Node.js:** 20.x (latest LTS)
+- **Artifacts:** Screenshots uploaded as ui-screenshots
 
 ### 2. **Screenshot Capture** (`.github/workflows/screenshots.yml`)
 - **Triggers:** Push to main/master, Pull Requests, Manual dispatch
@@ -58,9 +58,9 @@ Workflows run automatically on:
 ## 🔧 Configuration
 
 ### **Environment Setup:**
-- **Node.js:** 18.x and 20.x (matrix testing)
+- **Node.js:** 20.x (latest LTS)
 - **Puppeteer:** Full browser automation
-- **Dependencies:** Automatic installation
+- **Dependencies:** Automatic installation with npm install
 - **Caching:** npm cache for faster builds
 
 ### **Customization:**
@@ -80,7 +80,7 @@ Edit workflow files to:
 
 ### **Quality Assurance:**
 - ✅ **Regression Testing:** Visual comparisons
-- ✅ **Cross-version Testing:** Multiple Node.js versions
+- ✅ **Single Version Testing:** Node.js 20.x
 - ✅ **Documentation:** Automatic screenshot generation
 - ✅ **Reporting:** Comprehensive test summaries
 
@@ -105,6 +105,7 @@ Edit workflow files to:
 - **Server Startup:** 5-second wait included
 - **Artifact Upload:** Automatic with error handling
 - **Test Failures:** Detailed error reporting
+- **Dependency Installation:** Uses npm install for reliability
 
 ### **Debug Steps:**
 1. Check workflow logs in Actions tab
