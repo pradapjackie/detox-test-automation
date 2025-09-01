@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login App - UI Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .button {
+            width: 100%;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background-color: #0056CC;
+        }
+
+        .button:active {
+            transform: translateY(1px);
+        }
+
+        .hint {
+            color: #666;
+            font-size: 14px;
+            margin-top: 20px;
+            line-height: 1.4;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .logout-button {
+            background-color: #FF3B30;
+        }
+
+        .logout-button:hover {
+            background-color: #D70015;
+        }
+
+        .alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            text-align: center;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .alert-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .alert-message {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .alert-button {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .recording-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FF3B30;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10000;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.6; }
+        }
+
+        .test-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+    <div class="recording-indicator">REC</div>
+    <div class="test-info">Login App UI Testing</div>
+
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="container">
+            <h1 class="title" data-testid="login-title">Login</h1>
+            
+            <input 
+                type="email" 
+                id="email-input" 
+                class="input" 
+                placeholder="Email" 
+                data-testid="email-input"
+            >
+            
+            <input 
+                type="password" 
+                id="password-input" 
+                class="input" 
+                placeholder="Password" 
+                data-testid="password-input"
+            >
+            
+            <button 
+                id="login-button" 
+                class="button" 
+                data-testid="login-button"
+                onclick="handleLogin()"
+            >
+                Login
+            </button>
+            
+            <p class="hint">
+                Use <strong>test@example.com</strong> / <strong>password123</strong> to login
+            </p>
+        </div>
+
+        <!-- Welcome Screen (Hidden by default) -->
+        <div id="welcome-screen" class="container" style="display: none;">
+            <h1 class="welcome-text" data-testid="welcome-text">
+                Welcome! You are logged in.
+            </h1>
+            
+            <button 
+                id="logout-button" 
+                class="button logout-button" 
+                data-testid="logout-button"
+                onclick="handleLogout()"
+            >
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(title, message) {
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            
+            const alert = document.createElement('div');
+            alert.className = 'alert';
+            alert.innerHTML = `
+                <div class="alert-title">${title}</div>
+                <div class="alert-message">${message}</div>
+                <button class="alert-button" onclick="this.parentElement.parentElement.remove()">OK</button>
+            `;
+            
+            overlay.appendChild(alert);
+            document.body.appendChild(overlay);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (overlay.parentElement) {
+                    overlay.remove();
+                }
+            }, 3000);
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+            
+            if (!email || !password) {
+                showAlert('Error', 'Please enter both email and password');
+                return;
+            }
+            
+            if (email === 'test@example.com' && password === 'password123') {
+                showAlert('Success', 'Login successful!');
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('welcome-screen').style.display = 'block';
+                }, 1000);
+            } else {
+                showAlert('Error', 'Invalid email or password');
+            }
+        }
+
+        function handleLogout() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('email-input').value = '';
+            document.getElementById('password-input').value = '';
+        }
+
+        // Add keyboard support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                if (document.getElementById('login-screen').style.display !== 'none') {
+                    handleLogin();
+                } else {
+                    handleLogout();
+                }
+            }
+        });
+
+        // Add visual feedback for interactions
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('button')) {
+                event.target.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    event.target.style.transform = '';
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

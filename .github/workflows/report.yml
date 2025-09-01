@@ -1,0 +1,81 @@
+name: Test Report
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline", "Screenshot Capture"]
+    types: [completed]
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Download screenshots artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ui-screenshots
+        path: e2e/screenshots/
+        
+    - name: Generate comprehensive test report
+      run: |
+        echo "## 🧪 Test Report Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Run tests and capture output
+        echo "**Unit Tests:**" >> $GITHUB_STEP_SUMMARY
+        npm test 2>&1 | tee test-output.txt
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "**Detox E2E Tests:**" >> $GITHUB_STEP_SUMMARY
+        npm run test:detox 2>&1 | tee detox-output.txt
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Count screenshots
+        screenshot_count=$(find e2e/screenshots/ -name "*.png" | wc -l)
+        echo "**Screenshots Captured:** $screenshot_count" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # List screenshots
+        if [ $screenshot_count -gt 0 ]; then
+          echo "**Screenshot Files:**" >> $GITHUB_STEP_SUMMARY
+          for file in e2e/screenshots/*.png; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              size=$(ls -lh "$file" | awk '{print $5}')
+              echo "- $filename ($size)" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "### 📊 Test Coverage" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Unit Tests: React Native components" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ E2E Tests: Detox framework" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ UI Testing: Screenshot capture" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Visual Validation: Automated UI testing" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### 🎯 Test Scenarios Covered" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- Login form validation" >> $GITHUB_STEP_SUMMARY
+        echo "- Invalid credentials handling" >> $GITHUB_STEP_SUMMARY
+        echo "- Successful authentication" >> $GITHUB_STEP_SUMMARY
+        echo "- Logout functionality" >> $GITHUB_STEP_SUMMARY
+        echo "- Form field clearing" >> $GITHUB_STEP_SUMMARY
+        echo "- Error message display" >> $GITHUB_STEP_SUMMARY

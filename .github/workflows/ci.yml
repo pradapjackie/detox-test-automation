@@ -1,0 +1,56 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run unit tests
+      run: npm test
+      
+    - name: Run Detox E2E tests
+      run: npm run test:detox
+      
+    - name: Start test server
+      run: npm run test:server &
+      
+    - name: Wait for server to start
+      run: sleep 5
+      
+    - name: Capture screenshots
+      run: npm run test:screenshots
+      
+    - name: Upload screenshots as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: screenshots-${{ matrix.node-version }}
+        path: e2e/screenshots/
+        retention-days: 30
+        
+    - name: Generate test report
+      run: npm run test:view-screenshots
+      
+    - name: Stop test server
+      run: pkill -f "node e2e/server.js" || true
