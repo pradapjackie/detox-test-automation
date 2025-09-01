@@ -40,6 +40,25 @@ npm run ios
 npm run android
 ```
 
+## 📁 Project Files
+
+### **Important Files:**
+- `package.json` - Dependencies and scripts
+- `package-lock.json` - Locked dependency versions (committed)
+- `.gitignore` - Git ignore rules
+- `.github/workflows/` - GitHub Actions workflows
+
+### **Generated Files (ignored):**
+- `node_modules/` - Dependencies
+- `e2e/screenshots/` - Screenshots (local development)
+- `.detox/` - Detox artifacts
+- `coverage/` - Test coverage reports
+
+### **Screenshots:**
+- **Local:** Ignored by `.gitignore`
+- **GitHub Actions:** Uploaded as artifacts
+- **Manual:** Use `npm run test:view-screenshots`
+
 ## 🚀 GitHub Actions
 
 This project includes automated CI/CD workflows that run on GitHub Actions:

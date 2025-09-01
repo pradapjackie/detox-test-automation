@@ -40,7 +40,7 @@ yarn-error.*
 artifacts/
 detox.log
 
-# Screenshots and Videos
+# Screenshots and Videos (local development)
 e2e/screenshots/
 e2e/videos/
 *.png
@@ -49,6 +49,9 @@ e2e/videos/
 *.mp4
 *.mov
 *.avi
+
+# Keep screenshots for GitHub Actions artifacts
+!e2e/screenshots/*.png
 
 # Test artifacts
 coverage/
@@ -94,6 +97,9 @@ jspm_packages/
 
 # Optional npm cache directory
 .npm
+
+# Keep package-lock.json for consistent installs
+!package-lock.json
 
 # Optional eslint cache
 .eslintcache
